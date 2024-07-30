@@ -160,8 +160,8 @@ from sklearn.cluster import KMeans
 from sklearn.impute import SimpleImputer
 
 # Load the data from the two CSV files
-file1 = pd.read_csv('c:/Users/admin/Downloads/student_answers_part1.csv')
-file2 = pd.read_csv('c:/Users/admin/Downloads/student_answers_part2.csv')
+file1 = pd.read_csv('student_answers_part1.csv')
+file2 = pd.read_csv('student_answers_part2.csv')
 
 # Merge the data
 merged_data = pd.concat([file1, file2])
@@ -173,7 +173,7 @@ merged_data.to_csv('merged_data.csv', index=False)
 merged_data = pd.read_csv('merged_data.csv')
 
 # Load the competency level data
-competency_data = pd.read_csv('c:/Users/admin/Downloads/student_competency_levels (1).csv')
+competency_data = pd.read_csv('student_competency_levels (1).csv')
 
 # Compute overall competency level mappings
 student_competency = competency_data[['StudentProfileId','Score','CompetencyLevel']]
