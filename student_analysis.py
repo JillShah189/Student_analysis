@@ -23,18 +23,20 @@ merged_data = pd.read_csv('merged_data.csv')
 competency_data = pd.read_csv('student_competency_levels (1).csv')
 
 # Compute overall competency level mappings
-student_competency = competency_data[['StudentProfileId','Score','CompetencyLevel']]
-student_competency.rename(columns={'Score': 'AverageScore'}, inplace=True)
+student_competency = competency_data[['StudentProfileId','Score','CompetencyLevel']].copy()
+
+# Rename 'Score' to 'AverageScore'
+student_competency = student_competency.rename(columns={'Score': 'AverageScore'})
 
 # Create a copy for class competency calculations
 class_competency_copy = merged_data.copy()
 class_competency = class_competency_copy.groupby(['ClassId', 'SectionId'])['Score'].mean().reset_index()
-class_competency.rename(columns={'Score': 'AverageScore'}, inplace=True)
+class_competency = class_competency.rename(columns={'Score': 'AverageScore'})
 
 # Create a copy for school competency calculations
 school_competency_copy = merged_data.copy()
 school_competency = school_competency_copy.groupby('SchCd')['Score'].mean().reset_index()
-school_competency.rename(columns={'Score': 'AverageScore'}, inplace=True)
+school_competency = school_competency.rename(columns={'Score': 'AverageScore'})
 
 # Define competency level function
 def get_competency_level(score):
@@ -112,7 +114,7 @@ if options == 'Staff Performance':
     # Create a copy for staff performance calculations
     staff_performance_copy = merged_data.copy()
     staff_performance = staff_performance_copy.groupby('StaffID')['Score'].mean().reset_index()
-    staff_performance.rename(columns={'Score': 'AverageScore'}, inplace=True)
+    staff_performance = staff_performance.rename(columns={'Score': 'AverageScore'})
     staff_performance['CompetencyLevel'] = staff_performance['AverageScore'].apply(get_competency_level)
 
     st.subheader('Average Score per Staff Member')
@@ -125,7 +127,7 @@ if options == 'Staff Performance':
     st.plotly_chart(fig5)
 
     staff_count = staff_performance_copy.groupby('SchCd')['StaffID'].nunique().reset_index()
-    staff_count.rename(columns={'StaffID': 'StaffCount'}, inplace=True)
+    staff_count = staff_count.rename(columns={'StaffID': 'StaffCount'})
 
     st.subheader('Count of Staff Members per School')
     st.dataframe(staff_count)
@@ -134,7 +136,7 @@ if options == 'Staff Performance':
     staff_competency_counts = staff_performance_copy.groupby(['SchCd', 'StaffID'])['Score'].mean().reset_index()
     staff_competency_counts['CompetencyLevel'] = staff_competency_counts['Score'].apply(get_competency_level)
     competency_counts_per_school = staff_competency_counts.groupby(['SchCd', 'CompetencyLevel'])['StaffID'].count().reset_index()
-    competency_counts_per_school.rename(columns={'StaffID': 'Count'}, inplace=True)
+    competency_counts_per_school = competency_counts_per_school.rename(columns={'StaffID': 'Count'})
 
     st.subheader('Count of Competency Levels Among Staff Members per School')
 
@@ -153,7 +155,7 @@ if options == 'Question Analysis':
     # Create a copy for question difficulty calculations
     question_difficulty_copy = merged_data.copy()
     question_difficulty = question_difficulty_copy.groupby('QuestionNumber')['Score'].mean().reset_index()
-    question_difficulty.rename(columns={'Score': 'AverageScore'}, inplace=True)
+    question_difficulty = question_difficulty.rename(columns={'Score': 'AverageScore'})
 
     st.subheader('Difficulty Level of Each Question')
     fig6 = px.bar(question_difficulty, x='QuestionNumber', y='AverageScore', title='Difficulty Level of Each Question')
@@ -166,23 +168,15 @@ if options == 'Category Analysis':
     st.subheader('Average Score per Category')
     category_scores_copy = merged_data_copy.copy()
     category_scores = category_scores_copy.groupby('Category')['Score'].mean().reset_index()
-    category_scores.rename(columns={'Score': 'AverageScore'}, inplace=True)
-    fig8 = px.bar(category_scores, x='AverageScore', y='Category', title='Average Score per Category')
+    category_scores = category_scores.rename(columns={'Score': 'AverageScore'})
+    fig8 = px.bar(category_scores, x='Category', y='AverageScore', title='Average Score per Category')
     st.plotly_chart(fig8)
 
-    st.subheader('Count of Questions per Category')
-    category_counts_copy = merged_data_copy.copy()
-    category_counts = category_counts_copy['Category'].value_counts().reset_index()
-    category_counts.columns = ['Category', 'Count']
-    fig9 = px.bar(category_counts, x='Count', y='Category', title='Count of Questions per Category')
+    st.subheader('Count of Students per Category')
+    student_category_count = category_scores_copy['Category'].value_counts().reset_index()
+    student_category_count.columns = ['Category', 'Count']
+    fig9 = px.pie(student_category_count, names='Category', values='Count', title='Count of Students per Category')
     st.plotly_chart(fig9)
-
-    st.subheader('Count of Questions per Category')
-    category_counts = category_counts_copy['Category'].value_counts().reset_index()
-    category_counts.columns = ['Category', 'Count']
-    fig9 = px.pie(category_counts, values='Count', names='Category', title='Count of Questions per Category')
-    st.plotly_chart(fig9)
-
 
 # School-wise KMeans Clustering
 if options == 'School-wise Clustering':
