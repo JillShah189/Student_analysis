@@ -181,6 +181,7 @@ student_competency.rename(columns={'Score': 'AverageScore'}, inplace=True)
 class_competency = merged_data.groupby(['ClassId', 'SectionId'])['Score'].mean().reset_index()
 class_competency.rename(columns={'Score': 'AverageScore'}, inplace=True)
 school_competency = merged_data.groupby('SchCd')['Score'].mean().reset_index()
+student_competency = student_competency[['Score']].copy()
 school_competency.rename(columns={'Score': 'AverageScore'}, inplace=True)
 
 # Define competency level function
